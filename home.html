@@ -1,0 +1,1934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Netflix Clone - Video Streaming</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: #141414;
+      color: white;
+      overflow-x: hidden;
+    }
+
+    /* NAVBAR */
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 4%;
+      z-index: 1000;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%);
+      transition: background-color 0.3s;
+    }
+
+    .navbar.scrolled {
+      background-color: rgba(0, 0, 0, 0.9);
+    }
+
+    .logo {
+      color: #e50914;
+      font-size: 28px;
+      font-weight: bold;
+      letter-spacing: -1px;
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 20px;
+    }
+
+    .nav-links li {
+      cursor: pointer;
+      font-size: 14px;
+      transition: color 0.3s;
+      padding: 5px 10px;
+      border-radius: 3px;
+    }
+
+    .nav-links li:hover {
+      color: #b3b3b3;
+    }
+
+    .nav-links li.active {
+      font-weight: bold;
+      color: white;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .search-icon, .notification-icon {
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .profile {
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      background-color: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    /* HERO SECTION */
+    .hero {
+      height: 80vh;
+      background: linear-gradient(to top, #141414 0%, transparent 50%, #141414 100%), 
+                  url('https://wallpaperbat.com/img/631559-stranger-things-hd-wallpaper-and-background-image.jpg') center/cover no-repeat;
+      display: flex;
+      align-items: center;
+      padding: 0 4%;
+      position: relative;
+    }
+
+    .hero-content {
+      max-width: 600px;
+      z-index: 2;
+    }
+
+    .hero-title {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .hero-description {
+      font-size: 1.25rem;
+      margin-bottom: 30px;
+      line-height: 1.4;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 15px;
+    }
+
+    .btn {
+      padding: 10px 30px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.3s;
+    }
+
+    .btn-play {
+      background-color: white;
+      color: black;
+    }
+
+    .btn-play:hover {
+      background-color: rgba(255, 255, 255, 0.8);
+    }
+
+    .btn-info {
+      background-color: rgba(109, 109, 110, 0.7);
+      color: white;
+    }
+
+    .btn-info:hover {
+      background-color: rgba(109, 109, 110, 0.5);
+    }
+
+    /* TRENDING SECTION */
+    .trending-section {
+      padding: 0 4% 40px;
+      position: relative;
+      top: -140px;
+      margin-bottom: -90px;
+    }
+
+    .trending-title {
+      font-size: 1.9rem;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: whitesmoke;
+    }
+
+    .trending-row {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .trending-row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .trending-card {
+      flex: 0 0 auto;
+      width: 320px;
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .trending-card:hover {
+      transform: scale(1.08);
+    }
+
+    .trending-poster {
+      width: 100%;
+      height: 420px;
+    }
+
+    .trending-info {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+      padding: 20px 15px 15px;
+    }
+
+    .trending-name {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 5px;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+      color: whitesmoke;
+    }
+
+    .trending-meta {
+      font-size: 14px;
+      color: whitesmoke;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .trending-rating {
+      color: #46d369;
+      font-weight: bold;
+    }
+
+    .trending-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      background-color: rgba(255,255,255,0.2);
+      border-radius: 3px;
+      font-size: 12px;
+      margin-right: 5px;
+    }
+
+    .trending-tag.action {
+      background-color: rgba(229, 9, 20, 0.7);
+    }
+
+    /* MOVIE SECTIONS */
+    .section {
+      padding: 0 4% 40px;
+      margin-bottom: 30px;
+    }
+
+    .section-title {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      font-weight: 600;
+      color: whitesmoke;
+    }
+
+    .row {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      scrollbar-width: none;
+    }
+
+    .row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .movie-card {
+      flex: 0 0 auto;
+      width: 320px;
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+      transition: transform 0.4s;
+      cursor: pointer;
+    }
+
+    .movie-card:hover {
+      transform: scale(1.08);
+      z-index: 10;
+    }
+
+    .movie-card:hover .movie-info {
+      opacity: 1;
+    }
+
+    .movie-poster {
+      width: 100%;
+      height: 420px;
+    }
+
+    .movie-info {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+      padding: 20px 10px 10px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .movie-title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 5px;
+      margin-left: 10px;
+      color: whitesmoke;
+    }
+
+    .movie-meta {
+      font-size: 12px;
+      color: whitesmoke;
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      margin-left: 10px;
+    }
+
+    .movie-actions {
+      display: flex;
+      gap: 10px;
+      margin-left: 10px;
+      margin-bottom: 10px;
+    }
+
+    .movie-action-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.7);
+      background-color: rgba(0, 0, 0, 0.6);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .movie-action-btn:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .movie-action-btn.in-list {
+      background-color: #e50914;
+      border-color: #e50914;
+    }
+
+    /* VIDEO PLAYER */
+    .video-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.95);
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s;
+    }
+
+    .video-container.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .content-section{
+      margin-top: 7vw;
+    }
+
+    .video-player {
+      width: 80%;
+      max-width: 1000px;
+      height: 70vh;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #000;
+    }
+
+    #videoPlayerElement {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .video-controls {
+      width: 80%;
+      max-width: 1000px;
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    .video-close {
+      background-color: transparent;
+      color: white;
+      border: 2px solid white;
+      padding: 10px 25px;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .video-close:hover {
+      background-color: white;
+      color: black;
+    }
+
+    .video-title {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    /* FOOTER */
+    footer {
+      padding: 40px 4% 20px;
+      color: #808080;
+      font-size: 14px;
+    }
+
+    .social-icons {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .footer-links {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .footer-links a {
+      color: #808080;
+      text-decoration: none;
+    }
+
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+
+    .copyright {
+      border-top: 1px solid #333;
+      padding-top: 20px;
+      font-size: 12px;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 15px 20px;
+      }
+      
+      .nav-links {
+        display: none;
+      }
+      
+      .hero-title {
+        font-size: 2.5rem;
+      }
+      
+      .hero-description {
+        font-size: 1rem;
+      }
+      
+      .trending-card, .movie-card {
+        width: 200px;
+      }
+      
+      .trending-poster, .movie-poster {
+        height: 300px;
+      }
+      
+      .footer-links {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .video-player {
+        width: 95%;
+        height: 50vh;
+      }
+      
+      .video-controls {
+        width: 95%;
+        flex-direction: column;
+        gap: 15px;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="logo">NETFLIX</div>
+    <ul class="nav-links">
+      <li class="active" data-filter="home">Home</li>
+      <li data-filter="shows">TV Shows</li>
+      <li data-filter="movies">Movies</li>
+      <li data-filter="new-popular">New & Popular</li>
+      <li data-filter="mylist">My List</li>
+    </ul>
+    <div class="nav-right">
+      <div class="search-icon"><i class="fas fa-search"></i></div>
+      <div class="notification-icon"><i class="fas fa-bell"></i></div>
+      <div class="profile"><i class="fas fa-user"></i></div>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">Stranger Things</h1>
+      <p class="hero-description">When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces and one strange little girl.</p>
+      <div class="hero-buttons">
+        <button class="btn btn-play" onclick="playVideo('stranger-things')">
+          <i class="fas fa-play"></i> Play
+        </button>
+        <button class="btn btn-info">
+          <i class="fas fa-info-circle"></i> More Info
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN CONTENT -->
+  <div id="contentContainer">
+    <!-- HOME CONTENT (Default) -->
+    <div class="content-section" data-filter="home">
+      <!-- TRENDING NOW SECTION -->
+      <!-- TRENDING NOW SECTION -->
+  <section class="trending-section">
+    <h2 class="trending-title">Trending Now</h2>
+    <div class="trending-row">
+      <!-- The Dark Knight -->
+      <div class="trending-card" onclick="playVideo('demon-slayer')">
+        <img src="https://upload.wikimedia.org/wikipedia/en/a/ae/Kimetsu_No_Yaiba_Mugen_Jyo-hen_theatrical_poster.jpg" 
+             alt="The Dark Knight" class="trending-poster">
+        <div class="trending-info">
+          <div class="trending-name">demon-slayer5</div>
+          <div class="trending-meta">
+            <span class="trending-rating">98%</span>
+            <span>H</span>
+            <span>2025</span>
+            <span>2h 32m</span>
+          </div>
+          <div>
+            <span class="trending-tag action">Anime</span>
+            <span class="trending-tag">Horror</span>
+            <span class="trending-tag">Adventurous</span>
+          </div>
+        </div>
+      </div>
+      <!-- OG Movie -->
+<div class="movie-card" data-id="og-movie" onclick="playVideo('og-movie')">
+  <img src="https://upload.wikimedia.org/wikipedia/en/0/0c/OG_Poster.jpg" 
+       alt="OG Movie" class="movie-poster">
+  <div class="movie-info">
+    <div class="movie-title">OG</div>
+    <div class="movie-meta">
+      <span>2024</span>
+      <span>2h 45m</span>
+      <span>Crime, Drama</span>
+    </div>
+    <div class="movie-actions">
+      <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('og-movie')">
+        <i class="fas fa-play"></i>
+      </button>
+      <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('og-movie')">
+        <i class="fas fa-plus"></i>
+      </button>
+    </div>
+  </div>
+</div>
+      
+      <!-- Inception -->
+      <div class="trending-card" onclick="playVideo('param-sundari')">
+        <img src="https://images.filmibeat.com/webp/ph-big/2025/08/param-sundari1756280583_2.jpg" 
+             alt="Inception" class="trending-poster">
+        <div class="trending-info">
+          <div class="trending-name">Param-Sundari</div>
+          <div class="trending-meta">
+            <span class="trending-rating">87%</span>
+            <span>PG-13</span>
+            <span>2025</span>
+            <span>2h 28m</span>
+          </div>
+          <div>
+            <span class="trending-tag action">comedy</span>
+            <span class="trending-tag">Romantic</span>
+            <span class="trending-tag">action</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Parasite -->
+      <div class="trending-card" onclick="playVideo('conjuring-last-rites')">
+        <img src="https://upload.wikimedia.org/wikipedia/en/b/bc/The_Conjuring_%E2%80%93_Last_Rites.jpg" 
+             alt="Parasite" class="trending-poster">
+        <div class="trending-info">
+          <div class="trending-name">The Conjuring Last Rites</div>
+          <div class="trending-meta">
+            <span class="trending-rating">99%</span>
+            <span>R</span>
+            <span>2025</span>
+            <span>2h 12m</span>
+          </div>
+          <div>
+            <span class="trending-tag">Horror</span>
+            <span class="trending-tag">Action</span>
+            <span class="trending-tag">Thriller</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Stranger Things -->
+      <div class="trending-card" onclick="playVideo('speak-no-evil')">
+        <img src="https://upload.wikimedia.org/wikipedia/en/9/9f/Speak_No_Evil_%282024%29_Theatrical_Poster.jpeg" 
+             alt="Stranger Things" class="trending-poster">
+        <div class="trending-info">
+          <div class="trending-name">Speak No Evil</div>
+          <div class="trending-meta">
+            <span class="trending-rating">96%</span>
+            <span>TV-14</span>
+            <span>2016-2023</span>
+            <span>Series</span>
+          </div>
+          <div>
+            <span class="trending-tag">Sci-Fi</span>
+            <span class="trending-tag">Horror</span>
+            <span class="trending-tag">Drama</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+      <!-- THRILLER MOVIES SECTION -->
+      <section class="section">
+        <h2 class="section-title">Thriller Movies</h2>
+        <div class="row">
+          <!-- Stranger Things -->
+          <div class="movie-card" data-id="stranger-things" onclick="playVideo('stranger-things')">
+            <img src="https://wallpaperbat.com/img/631559-stranger-things-hd-wallpaper-and-background-image.jpg" 
+                 alt="Stranger Things" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">Stranger Things</div>
+              <div class="movie-meta">
+                <span>2016-2023</span>
+                <span>Series</span>
+                <span>Sci-Fi Thriller</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('stranger-things')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('stranger-things')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Berlin -->
+          <div class="movie-card" data-id="berlin" onclick="playVideo('berlin')">
+            <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" 
+                 alt="Berlin" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">Berlin</div>
+              <div class="movie-meta">
+                <span>2023</span>
+                <span>Series</span>
+                <span>Crime Thriller</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('berlin')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('berlin')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Juror 2 -->
+          <div class="movie-card" data-id="juror-2" onclick="playVideo('juror-2')">
+            <img src="https://upload.wikimedia.org/wikipedia/en/b/be/Juror_No._2_%282024%29.jpg" 
+                 alt="Juror 2" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">Juror #2</div>
+              <div class="movie-meta">
+                <span>2024</span>
+                <span>1h 55m</span>
+                <span>Legal Thriller</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('juror-2')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('juror-2')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Speak No Evil -->
+          <div class="movie-card" data-id="speak-no-evil" onclick="playVideo('speak-no-evil')">
+            <img src="https://upload.wikimedia.org/wikipedia/en/9/9f/Speak_No_Evil_%282024%29_Theatrical_Poster.jpeg" 
+                 alt="Speak No Evil" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">Speak No Evil</div>
+              <div class="movie-meta">
+                <span>2022</span>
+                <span>1h 45m</span>
+                <span>Psychological Horror</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('speak-no-evil')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('speak-no-evil')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+           <div class="movie-card" data-id="the-queens-gambit" onclick="playVideo('the-queens-gambit')">
+            <img src="queens.webp" 
+                 alt="The Queen's Gambit" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">The Queen's Gambit</div>
+              <div class="movie-meta">
+                <span>2020</span>
+                <span>Drama</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('the-queens-gambit')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('the-queens-gambit')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </section>
+
+      <!-- COMEDY MOVIES SECTION -->
+      <section class="section">
+        <h2 class="section-title">Comedy Movies</h2>
+        <div class="row">
+          <!-- Johnny English -->
+          <div class="movie-card" data-id="johnny-english" onclick="playVideo('johnny-english')">
+            <img src="https://upload.wikimedia.org/wikipedia/en/f/fc/Johnny_English_Strikes_Again_poster.jpg" 
+                 alt="Johnny English Strikes Again" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">Johnny English</div>
+              <div class="movie-meta">
+                <span>2003</span>
+                <span>1h 29m</span>
+                <span>Comedy, Spy</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('johnny-english')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('johnny-english')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Laapataa Ladies -->
+          <div class="movie-card" data-id="lapta-ladies" onclick="playVideo('lapta-ladies')">
+            <img src="https://static.moviecrow.com/gallery/20240923/235007-ll.jpeg" 
+                 alt="Laapataa Ladies" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">Laapataa Ladies</div>
+              <div class="movie-meta">
+                <span>2024</span>
+                <span>2h 05m</span>
+                <span>Comedy-Drama</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('lapta-ladies')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('lapta-ladies')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Om Bheem Bhush -->
+          <div class="movie-card" data-id="om-bheem-bhush" onclick="playVideo('om-bheem-bhush')">
+            <img src="https://upload.wikimedia.org/wikipedia/en/9/97/Om_Bheem_Bush_poster.jpg" 
+                 alt="Om Bheem Bhush" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">Om Bheem Bush</div>
+              <div class="movie-meta">
+                <span>2024</span>
+                <span>2h 15m</span>
+                <span>Comedy, Fantasy</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('om-bheem-bhush')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('om-bheem-bhush')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Housefull -->
+          <div class="movie-card" data-id="housefull" onclick="playVideo('housefull')">
+            <img src="https://upload.wikimedia.org/wikipedia/en/3/3c/Housefull_4_poster.jpg" 
+                 alt="Housefull" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">Housefull</div>
+              <div class="movie-meta">
+                <span>2010</span>
+                <span>2h 15m</span>
+                <span>Comedy</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('housefull')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('housefull')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Stuart Little 2 -->
+          <div class="movie-card" data-id="stuart-little2" onclick="playVideo('stuart-little2')">
+            <img src="https://upload.wikimedia.org/wikipedia/en/9/96/Stuart_Little.jpg" 
+                 alt="Stuart Little 2" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">Stuart Little 2</div>
+              <div class="movie-meta">
+                <span>2002</span>
+                <span>1h 17m</span>
+                <span>Family Comedy</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('stuart-little2')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('stuart-little2')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- HORROR MOVIES SECTION -->
+    <section class="section" id="horror-section">
+    <h2 class="section-title">Horror Movies</h2>
+    <div class="row" id="horror-row">
+      <!-- The Conjuring: Last Rites -->
+      <div class="movie-card" data-genre="horror" onclick="playVideo('conjuring-last-rites')">
+        <img src="https://upload.wikimedia.org/wikipedia/en/b/bc/The_Conjuring_%E2%80%93_Last_Rites.jpg" 
+             alt="The Conjuring: Last Rites" class="movie-poster">
+        <div class="movie-info">
+          <div class="movie-title">The Conjuring: Last Rites</div>
+          <div class="movie-meta">
+            <span>2025</span>
+            <span>2h 05m</span>
+            <span>Horror</span>
+          </div>
+          <div class="movie-actions">
+            <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('conjuring-last-rites')">
+              <i class="fas fa-play"></i>
+            </button>
+            <button class="movie-action-btn">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Stree 2 -->
+      <div class="movie-card" data-genre="horror" onclick="playVideo('stree-2')">
+        <img src="https://upload.wikimedia.org/wikipedia/en/a/a1/Stree_2.jpg" 
+             alt="Stree 2" class="movie-poster">
+        <div class="movie-info">
+          <div class="movie-title">Stree 2</div>
+          <div class="movie-meta">
+            <span>2024</span>
+            <span>2h 15m</span>
+            <span>Horror Comedy</span>
+          </div>
+          <div class="movie-actions">
+            <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('stree-2')">
+              <i class="fas fa-play"></i>
+            </button>
+            <button class="movie-action-btn">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- The Nun 2 -->
+      <div class="movie-card" data-genre="horror" onclick="playVideo('nun-2')">
+        <img src="https://upload.wikimedia.org/wikipedia/en/b/bc/The_Nun_II_%282023%29.jpg" 
+             alt="The Nun 2" class="movie-poster">
+        <div class="movie-info">
+          <div class="movie-title">The Nun II</div>
+          <div class="movie-meta">
+            <span>2023</span>
+            <span>1h 50m</span>
+            <span>Horror</span>
+          </div>
+          <div class="movie-actions">
+            <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('nun-2')">
+              <i class="fas fa-play"></i>
+            </button>
+            <button class="movie-action-btn">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+          <div class="movie-card" data-id="thamma" onclick="playVideo('thamma')">
+            <img src="https://upload.wikimedia.org/wikipedia/en/4/4e/Thamma_film_poster.jpg" 
+                 alt="Thamma" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">Thamma</div>
+              <div class="movie-meta">
+                <span>2025</span>
+                <span>Action, Drama</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('thamma')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('thamma')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="movie-card" data-id="wednesday2" onclick="playVideo('wednesday2')">
+            <img src="wednesday.webp" 
+                 alt="Wednesday Season 2" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">Wednesday Season 2</div>
+              <div class="movie-meta">
+                <span>2024</span>
+                <span>Mystery, Comedy</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('wednesday2')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('wednesday2')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+    </div>
+  </section>
+
+
+      <!-- ANIME SECTION -->
+      <section class="section">
+        <h2 class="section-title">Anime Series</h2>
+        <div class="row">
+          <!-- Jujutsu Kaisen -->
+          <div class="movie-card" data-id="jujutsu-kaisen" onclick="playVideo('jujutsu-kaisen')">
+            <img src="https://upload.wikimedia.org/wikipedia/en/4/46/Jujutsu_kaisen.jpg" 
+                 alt="Jujutsu Kaisen" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">Jujutsu Kaisen</div>
+              <div class="movie-meta">
+                <span>2020–</span>
+                <span>Anime, Action, Fantasy</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('jujutsu-kaisen')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('jujutsu-kaisen')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Demon Slayer -->
+          <div class="movie-card" data-id="demon-slayer" onclick="playVideo('demon-slayer')">
+            <img src="https://upload.wikimedia.org/wikipedia/en/a/ae/Kimetsu_No_Yaiba_Mugen_Jyo-hen_theatrical_poster.jpg" 
+                 alt="Demon Slayer" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">Demon Slayer</div>
+              <div class="movie-meta">
+                <span>2019–</span>
+                <span>Anime, Dark Fantasy</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('demon-slayer')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('demon-slayer')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Solo Leveling -->
+          <div class="movie-card" data-id="solo-leveling" onclick="playVideo('solo-leveling')">
+            <img src="https://upload.wikimedia.org/wikipedia/en/6/6c/Solo_Leveling_Volume_1_Cover.jpg" 
+                 alt="Solo Leveling" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">Solo Leveling</div>
+              <div class="movie-meta">
+                <span>2024</span>
+                <span>Anime, Action, Fantasy</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('solo-leveling')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('solo-leveling')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Spy x Family -->
+          <div class="movie-card" data-id="spy-x-family" onclick="playVideo('spy-x-family')">
+            <img src="https://upload.wikimedia.org/wikipedia/en/5/51/Spy_Family_vol_1.jpg" 
+                 alt="Spy x Family" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">Spy×Family</div>
+              <div class="movie-meta">
+                <span>2022–</span>
+                <span>Anime Comedy, Action</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('spy-x-family')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('spy-x-family')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- Death Note -->
+<div class="movie-card" data-id="death-note" onclick="playVideo('death-note')">
+  <img src="https://upload.wikimedia.org/wikipedia/en/6/6f/Death_Note_Vol_1.jpg" 
+       alt="Death Note" class="movie-poster">
+  <div class="movie-info">
+    <div class="movie-title">Death Note</div>
+    <div class="movie-meta">
+      <span>2006</span>
+      <span>Anime Classic</span>
+      <span>Thriller, Crime</span>
+    </div>
+    <div class="movie-actions">
+      <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('death-note')">
+        <i class="fas fa-play"></i>
+      </button>
+      <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('death-note')">
+        <i class="fas fa-plus"></i>
+      </button>
+    </div>
+  </div>
+</div>
+        </div>
+      </section>
+
+      <!-- DEVOTIONAL SECTION -->
+      <section class="section">
+        <h2 class="section-title">Devotional Content</h2>
+        <div class="row">
+          <!-- The King of Kings -->
+          <div class="movie-card" data-id="the-kings-of-kings" onclick="playVideo('the-kings-of-kings')">
+            <img src="https://upload.wikimedia.org/wikipedia/en/3/31/The_King_of_Kings_posters.jpg" 
+                 alt="The King of Kings" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">The King of Kings</div>
+              <div class="movie-meta">
+                <span>1961</span>
+                <span>2h 15m</span>
+                <span>Historical, Drama</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('the-kings-of-kings')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('the-kings-of-kings')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Kurukshetra -->
+          <div class="movie-card" data-id="kurukshetr" onclick="playVideo('kurukshetr')">
+            <img src="kuru.png" 
+                 alt="Kurukshetra" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">Kurukshetra</div>
+              <div class="movie-meta">
+                <span>2019</span>
+                <span>Mythological, War</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('kurukshetr')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('kurukshetr')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- David: The Divine Warrior (Mythological Movie) -->
+<div class="movie-card" data-id="david-divine" onclick="playVideo('david-divine')">
+  <img src="https://upload.wikimedia.org/wikipedia/en/8/82/David_%282025_film%29_poster.jpeg" 
+       alt="David: The Divine Warrior" class="movie-poster">
+  <div class="movie-info">
+    <div class="movie-title">David: The Divine Warrior</div>
+    <div class="movie-meta">
+      <span>2024</span>
+      <span>2h 25m</span>
+      <span>Mythological, Action</span>
+    </div>
+    <div class="movie-actions">
+      <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('david-divine')">
+        <i class="fas fa-play"></i>
+      </button>
+      <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('david-divine')">
+        <i class="fas fa-plus"></i>
+      </button>
+    </div>
+  </div>
+</div>
+          
+          <!-- Maha Avtar -->
+          <div class="movie-card" data-id="maha-avtar" onclick="playVideo('maha-avtar')">
+            <img src="nara.png" 
+                 alt="Maha Avtar" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">Maha Avtar Narasimha</div>
+              <div class="movie-meta">
+                <span>2025</span>
+                <span>Mythological, Animation</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('maha-avtar')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('maha-avtar')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- Neelakanth and the Snows of Himalaya -->
+<div class="movie-card" data-id="neelakanth-snows" onclick="playVideo('neelakanth-snows')">
+  <img src="http://www.baps.org/Data/Sites/1/Media/GalleryImages/13955/WebImages/Part_4_FHD_13_f.jpg" 
+       alt="Neelakanth and the Snows of Himalaya" class="movie-poster">
+  <div class="movie-info">
+    <div class="movie-title">Neelakanth and the Snows of Himalaya</div>
+    <div class="movie-meta">
+      <span>2024</span>
+      <span>2h 35m</span>
+      <span>Mythological, Adventure</span>
+    </div>
+    <div class="movie-actions">
+      <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('neelakanth-snows')">
+        <i class="fas fa-play"></i>
+      </button>
+      <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('neelakanth-snows')">
+        <i class="fas fa-plus"></i>
+      </button>
+    </div>
+  </div>
+</div>
+        </div>
+      </section>
+    </div>
+
+    <!-- TV SHOWS CONTENT -->
+    <div class="content-section" data-filter="shows" style="display: none;">
+      <section class="section">
+        <h2 class="section-title">TV Shows</h2>
+        <div class="row">
+          <!-- Stranger Things -->
+          <div class="movie-card" data-id="stranger-things" onclick="playVideo('stranger-things')">
+            <img src="https://wallpaperbat.com/img/631559-stranger-things-hd-wallpaper-and-background-image.jpg" 
+                 alt="Stranger Things" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">Stranger Things</div>
+              <div class="movie-meta">
+                <span>4 Seasons</span>
+                <span>TV-14</span>
+                <span>Sci-Fi Horror</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('stranger-things')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('stranger-things')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Berlin -->
+          <div class="movie-card" data-id="berlin" onclick="playVideo('berlin')">
+            <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" 
+                 alt="Berlin" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">Berlin</div>
+              <div class="movie-meta">
+                <span>1 Season</span>
+                <span>TV-MA</span>
+                <span>Crime Drama</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('berlin')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('berlin')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+              <div class="movie-card" data-id="wednesday2" onclick="playVideo('wednesday2')">
+            <img src="wednesday.webp" 
+                 alt="Wednesday Season 2" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">Wednesday Season 2</div>
+              <div class="movie-meta">
+                <span>2024</span>
+                <span>Mystery, Comedy</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('wednesday2')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('wednesday2')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- The Queen's Gambit -->
+          <div class="movie-card" data-id="the-queens-gambit" onclick="playVideo('the-queens-gambit')">
+            <img src="queens.webp" 
+                 alt="The Queen's Gambit" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">The Queen's Gambit</div>
+              <div class="movie-meta">
+                <span>2020</span>
+                <span>Drama</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('the-queens-gambit')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('the-queens-gambit')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </section>
+
+      <section class="section">
+        <h2 class="section-title">Reality Shows</h2>
+        <div class="row">
+          <!-- Khatra Khatra Khatra -->
+          <div class="movie-card" data-id="katra" onclick="playVideo('katra')">
+            <img src="katra2.png" 
+                 alt="Khatra Khatra Khatra" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">Khatra Khatra Khatra</div>
+              <div class="movie-meta">
+                <span>2019</span>
+                <span>Comedy, Reality</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('katra')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('katra')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          
+          <!-- The Kapil Sharma Show -->
+          <div class="movie-card" data-id="kapil-sharma" onclick="playVideo('kapil-sharma')">
+            <img src="kapil.webp" 
+                 alt="The Kapil Sharma Show" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">The Kapil Sharma Show</div>
+              <div class="movie-meta">
+                <span>2016</span>
+                <span>Comedy, Talk Show</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('kapil-sharma')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('kapil-sharma')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Indian Idol -->
+          <div class="movie-card" data-id="Indian-Idol" onclick="playVideo('Indian-Idol')">
+            <img src="idoli.png" 
+                 alt="Indian Idol" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">Indian Idol</div>
+              <div class="movie-meta">
+                <span>2004</span>
+                <span>Reality, Singing</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('Indian-Idol')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('Indian-Idol')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- American Idol -->
+          <div class="movie-card" data-id="American-Idol" onclick="playVideo('American-Idol')">
+            <img src="amerido.png" 
+                 alt="American Idol" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">American Idol</div>
+              <div class="movie-meta">
+                <span>2002</span>
+                <span>Reality, Singing</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('American-Idol')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('American-Idol')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- India's Got Talent -->
+          <div class="movie-card" data-id="India's-got-talent" onclick="playVideo('India\'s-got-talent')">
+            <img src="indig.png" 
+                 alt="India's Got Talent" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">India's Got Talent</div>
+              <div class="movie-meta">
+                <span>2009</span>
+                <span>Reality, Talent</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('India\'s-got-talent')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('India\'s-got-talent')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- America's Got Talent -->
+          <div class="movie-card" data-id="America's-got-tallent" onclick="playVideo('America\'s-got-tallent')">
+            <img src="amerigg.png" 
+                 alt="America's Got Talent" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">America's Got Talent</div>
+              <div class="movie-meta">
+                <span>2006</span>
+                <span>Reality, Talent</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('America\'s-got-tallent')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('America\'s-got-tallent')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- MOVIES CONTENT -->
+    <div class="content-section" data-filter="movies" style="display: none;">
+      <!-- This would show all movies from different genres -->
+      <section class="section">
+        <h2 class="section-title">All Movies</h2>
+        <div class="row" id="all-movies-row">
+          <!-- Movies will be populated by JavaScript -->
+        </div>
+      </section>
+    </div>
+
+    <!-- NEW & POPULAR CONTENT -->
+    <div class="content-section" data-filter="new-popular" style="display: none;">
+      <section class="section">
+        <h2 class="section-title">New & Popular</h2>
+        <div class="row">
+          <!-- Wednesday Season 2 -->
+          <div class="movie-card" data-id="wednesday2" onclick="playVideo('wednesday2')">
+            <img src="wednesday.webp" 
+                 alt="Wednesday Season 2" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">Wednesday Season 2</div>
+              <div class="movie-meta">
+                <span>2024</span>
+                <span>Mystery, Comedy</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('wednesday2')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('wednesday2')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- OG Movie -->
+<div class="movie-card" data-id="og-movie" onclick="playVideo('og-movie')">
+  <img src="https://upload.wikimedia.org/wikipedia/en/0/0c/OG_Poster.jpg" 
+       alt="OG Movie" class="movie-poster">
+  <div class="movie-info">
+    <div class="movie-title">OG</div>
+    <div class="movie-meta">
+      <span>2024</span>
+      <span>2h 45m</span>
+      <span>Crime, Drama</span>
+    </div>
+    <div class="movie-actions">
+      <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('og-movie')">
+        <i class="fas fa-play"></i>
+      </button>
+      <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('og-movie')">
+        <i class="fas fa-plus"></i>
+      </button>
+    </div>
+  </div>
+</div>
+          
+          <!-- The Queen's Gambit -->
+          <div class="movie-card" data-id="the-queens-gambit" onclick="playVideo('the-queens-gambit')">
+            <img src="queens.webp" 
+                 alt="The Queen's Gambit" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">The Queen's Gambit</div>
+              <div class="movie-meta">
+                <span>2020</span>
+                <span>Drama</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('the-queens-gambit')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('the-queens-gambit')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Avatar 3 -->
+          <div class="movie-card" data-id="avtar3" onclick="playVideo('avtar3')">
+            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/54/Avatar_The_Way_of_Water_poster.jpg/375px-Avatar_The_Way_of_Water_poster.jpg" 
+                 alt="Avatar 3" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">Avatar 3</div>
+              <div class="movie-meta">
+                <span>2025</span>
+                <span>Sci-Fi, Fantasy</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('avtar3')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('avtar3')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Dahmer -->
+          <div class="movie-card" data-id="dahmer" onclick="playVideo('dahmer')">
+            <img src="dahmer.webp" 
+                 alt="Dahmer" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">Dahmer</div>
+              <div class="movie-meta">
+                <span>2022</span>
+                <span>Crime, Biography</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('dahmer')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('dahmer')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Thamma -->
+          <div class="movie-card" data-id="thamma" onclick="playVideo('thamma')">
+            <img src="https://upload.wikimedia.org/wikipedia/en/4/4e/Thamma_film_poster.jpg" 
+                 alt="Thamma" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">Thamma</div>
+              <div class="movie-meta">
+                <span>2025</span>
+                <span>Action, Drama</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('thamma')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('thamma')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- All of Us Are Dead -->
+          <div class="movie-card" data-id="all-of-us-are-dead" onclick="playVideo('all-of-us-are-dead')">
+            <img src="https://upload.wikimedia.org/wikipedia/en/2/24/All_of_Us_Are_Dead.jpeg" 
+                 alt="All of Us Are Dead" class="movie-poster">
+            <div class="movie-info">
+              <div class="movie-title">All of Us Are Dead</div>
+              <div class="movie-meta">
+                <span>2022</span>
+                <span>Zombie, Thriller</span>
+              </div>
+              <div class="movie-actions">
+                <button class="movie-action-btn" onclick="event.stopPropagation(); playVideo('all-of-us-are-dead')">
+                  <i class="fas fa-play"></i>
+                </button>
+                <button class="movie-action-btn add-to-list" onclick="event.stopPropagation(); toggleMyList('all-of-us-are-dead')">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- MY LIST CONTENT -->
+    <div class="content-section" data-filter="mylist" style="display: none;">
+      <section class="section">
+        <h2 class="section-title">My List</h2>
+        <div class="row" id="my-list-row">
+          <!-- Content will be populated by JavaScript -->
+          <div style="padding: 40px; text-align: center; width: 100%;">
+            <p>Your list is empty. Add movies by clicking the <i class="fas fa-plus"></i> button.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- VIDEO PLAYER -->
+  <div class="video-container" id="videoContainer">
+    <div class="video-player">
+      <video id="videoPlayerElement" controls autoplay>
+        <!-- Video will be dynamically loaded -->
+      </video>
+    </div>
+    <div class="video-controls">
+      <div class="video-title" id="videoTitle">Now Playing</div>
+      <button class="video-close" onclick="closeVideo()">Close</button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="social-icons">
+      <i class="fab fa-facebook"></i>
+      <i class="fab fa-instagram"></i>
+      <i class="fab fa-twitter"></i>
+      <i class="fab fa-youtube"></i>
+    </div>
+    
+    <div class="footer-links">
+      <a href="#">Audio Description</a>
+      <a href="#">Help Center</a>
+      <a href="#">Gift Cards</a>
+      <a href="#">Media Center</a>
+      <a href="#">Investor Relations</a>
+      <a href="#">Jobs</a>
+      <a href="#">Terms of Use</a>
+      <a href="#">Privacy</a>
+      <a href="#">Legal Notices</a>
+      <a href="#">Cookie Preferences</a>
+      <a href="#">Corporate Information</a>
+      <a href="#">Contact Us</a>
+    </div>
+    
+    <div class="copyright">
+      &copy; 2025 Netflix Clone. For demonstration purposes only.
+    </div>
+  </footer>
+
+  <script>
+    // Video data
+    const videoSources = {
+      'stranger-things': 'stranger.mp4',
+      'berlin': 'berlin.mp4',
+      'jujutsu-kaisen': 'jujutsu.mp4',
+      'johnny-english': 'jhonny.mp4',
+      'conjuring-last-rites': 'conjuring.mp4',
+      'demon-slayer': 'demon.mp4',
+      'juror-2': 'juror.mp4',
+      'the-kings-of-kings': 'king.mp4',
+      'kurukshetr': 'kurukshetr.mp4',
+      'lapta-ladies': 'lapta.mp4',
+      'maha-avtar': 'mahaavtar.mp4',
+      'nun-2': 'nun2.mp4',
+      'om-bheem-bhush': 'ombheem.mp4',
+      'param-sundari': 'param sundari.mp4',
+      'solo-leveling': 'solo.mp4',
+      'speak-no-evil': 'speak.mp4',
+      'spy-x-family': 'spy.mp4',
+      'stree-2': 'stree2.mp4',
+      'stuart-little2': 'stuart_little2.mp4',
+      'dark-knight': 'dark_knight.mp4',
+      'housefull': 'housefull.mp4',
+      'katra': 'katra.mp4',
+      'kapil-sharma': 'kapil.mp4',
+      'Indian-Idol': 'indianIdol.mp4',
+      'American-Idol': 'aIdol.mp4',
+      "India's-got-talent": 'iGotTalent.mp4',
+      "America's-got-tallent": 'aGotTalent.mp4',
+      'wednesday2': "wedn.mp4",
+      'the-queens-gambit': "queens.mp4",
+      'avtar3': 'avtar3.mp4',
+      'dahmer': "dahmer.mp4",
+      'thamma': 'thamma.mp4',
+      'all-of-us-are-dead': 'allous.mp4',
+      'og-movie':'og.mp4',
+      'david-divine':'david.mp4',
+      'neelakanth-snows': 'neelakanth.mp4',
+'death-note': 'deathnote.mp4'
+      
+    };
+
+    const videoTitles = {
+      'stranger-things': 'Stranger Things',
+      'berlin': 'Berlin',
+      'jujutsu-kaisen': 'Jujutsu Kaisen',
+      'johnny-english': 'Johnny English',
+      'conjuring-last-rites': 'The Conjuring: Last Rites',
+      'demon-slayer': 'Demon Slayer',
+      'juror-2': 'Juror #2',
+      'the-kings-of-kings': 'The King of Kings',
+      'kurukshetr': 'Kurukshetra',
+      'lapta-ladies': 'Laapataa Ladies',
+      'maha-avtar': 'Maha Avtar Narasimha',
+      'nun-2': 'The Nun II',
+      'om-bheem-bhush': 'Om Bheem Bush',
+      'param-sundari': 'Param Sundari',
+      'solo-leveling': 'Solo Leveling',
+      'speak-no-evil': 'Speak No Evil',
+      'spy-x-family': 'Spy×Family',
+      'stree-2': 'Stree 2',
+      'stuart-little2': 'Stuart Little 2',
+      'dark-knight': 'The Dark Knight',
+      'housefull': 'Housefull',
+      'katra': 'Khatra Khatra Khatra',
+      'kapil-sharma': 'The Kapil Sharma Show',
+      'Indian-Idol': 'Indian Idol',
+      'American-Idol': 'American Idol',
+      "India's-got-talent": "India's Got Talent",
+      "America's-got-tallent": "America's Got Talent",
+      'wednesday2': "Wednesday Season 2",
+      'the-queens-gambit': "The Queen's Gambit",
+      'avtar3': 'Avatar 3',
+      'dahmer': 'Dahmer',
+      'thamma': 'Thammudu',
+      'all-of-us-are-dead': 'All of Us Are Dead',
+      'og-movie':'OG',
+            'david-divine':'David',
+            'neelakanth-snows': 'Neelakanth and the Snows of Himalaya',
+'death-note': 'Death Note'
+
+    };
+
+    // My List functionality
+    let myList = JSON.parse(localStorage.getItem('netflixMyList')) || [];
+
+    function toggleMyList(videoId) {
+      const index = myList.indexOf(videoId);
+      const button = event.target.closest('.add-to-list');
+      
+      if (index === -1) {
+        // Add to list
+        myList.push(videoId);
+        if (button) {
+          button.classList.add('in-list');
+          button.innerHTML = '<i class="fas fa-check"></i>';
+        }
+      } else {
+        // Remove from list
+        myList.splice(index, 1);
+        if (button) {
+          button.classList.remove('in-list');
+          button.innerHTML = '<i class="fas fa-plus"></i>';
+        }
+      }
+      
+      // Save to localStorage
+      localStorage.setItem('netflixMyList', JSON.stringify(myList));
+      
+      // Update My List section if visible
+      if (document.querySelector('[data-filter="mylist"]').style.display !== 'none') {
+        displayMyList();
+      }
+    }
+
+    function displayMyList() {
+      const myListRow = document.getElementById('my-list-row');
+      
+      if (myList.length === 0) {
+        myListRow.innerHTML = '<div style="padding: 40px; text-align: center; width: 100%;"><p>Your list is empty. Add movies by clicking the <i class="fas fa-plus"></i> button.</p></div>';
+        return;
+      }
+      
+      myListRow.innerHTML = '';
+      
+      // Find and display each movie in myList
+      myList.forEach(videoId => {
+        const movieCard = document.querySelector(`.movie-card[data-id="${videoId}"]`);
+        if (movieCard) {
+          const clone = movieCard.cloneNode(true);
+          const addButton = clone.querySelector('.add-to-list');
+          if (addButton) {
+            addButton.classList.add('in-list');
+            addButton.innerHTML = '<i class="fas fa-check"></i>';
+          }
+          myListRow.appendChild(clone);
+        }
+      });
+    }
+
+    function updateAddToListButtons() {
+      document.querySelectorAll('.add-to-list').forEach(button => {
+        const movieCard = button.closest('.movie-card');
+        const videoId = movieCard.getAttribute('data-id');
+        
+        if (myList.includes(videoId)) {
+          button.classList.add('in-list');
+          button.innerHTML = '<i class="fas fa-check"></i>';
+        } else {
+          button.classList.remove('in-list');
+          button.innerHTML = '<i class="fas fa-plus"></i>';
+        }
+      });
+    }
+
+    // Navigation filtering
+    function setupNavFilter() {
+      const navItems = document.querySelectorAll('.nav-links li');
+      const contentSections = document.querySelectorAll('.content-section');
+      const heroSection = document.querySelector('.hero');
+      
+      navItems.forEach(item => {
+        item.addEventListener('click', () => {
+          // Update active nav item
+          navItems.forEach(nav => nav.classList.remove('active'));
+          item.classList.add('active');
+          
+          const filter = item.getAttribute('data-filter');
+          
+          // Show/hide content based on filter
+          contentSections.forEach(section => {
+            if (section.getAttribute('data-filter') === filter) {
+              section.style.display = 'block';
+            } else {
+              section.style.display = 'none';
+            }
+          });
+          
+          // Show/hide hero section (only for home)
+          if (filter === 'home') {
+            heroSection.style.display = 'flex';
+          } else {
+            heroSection.style.display = 'none';
+          }
+          
+          // Special handling for My List
+          if (filter === 'mylist') {
+            displayMyList();
+          }
+        });
+      });
+    }
+
+    // Populate All Movies section
+    function populateAllMovies() {
+      const allMoviesRow = document.getElementById('all-movies-row');
+      const allMovieCards = document.querySelectorAll('.movie-card[data-id]');
+      
+      allMovieCards.forEach(card => {
+        const clone = card.cloneNode(true);
+        allMoviesRow.appendChild(clone);
+      });
+      
+      // Update add to list buttons
+      updateAddToListButtons();
+    }
+
+    function playVideo(videoId) {
+      const videoContainer = document.getElementById('videoContainer');
+      const videoPlayer = document.getElementById('videoPlayerElement');
+      const videoTitle = document.getElementById('videoTitle');
+      
+      const videoSource = videoSources[videoId];
+      if (!videoSource) {
+        alert('Video file not found. Please make sure the video file is in the same directory.');
+        return;
+      }
+      
+      videoPlayer.src = videoSource;
+      videoTitle.textContent = 'Now Playing: ' + (videoTitles[videoId] || videoId);
+      
+      videoContainer.classList.add('active');
+      
+      videoPlayer.play().catch(error => {
+        console.error('Error playing video:', error);
+        alert('Error playing video. The video file might be missing or in wrong format.');
+      });
+      
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeVideo() {
+      const videoContainer = document.getElementById('videoContainer');
+      const videoPlayer = document.getElementById('videoPlayerElement');
+      
+      videoContainer.classList.remove('active');
+      videoPlayer.pause();
+      videoPlayer.currentTime = 0;
+      document.body.style.overflow = 'auto';
+    }
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      setupNavFilter();
+      populateAllMovies();
+      updateAddToListButtons();
+      
+      // Close video when clicking outside
+      document.getElementById('videoContainer').addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeVideo();
+        }
+      });
+      
+      // Navbar background on scroll
+      window.addEventListener('scroll', function() {
+        const navbar = document.querySelector('.navbar');
+        if (window.scrollY > 50) {
+          navbar.classList.add('scrolled');
+        } else {
+          navbar.classList.remove('scrolled');
+        }
+      });
+      
+      console.log('Netflix Clone initialized. My List items:', myList);
+    });
+  </script>
+</body>
+</html>
