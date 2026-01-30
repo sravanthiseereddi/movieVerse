@@ -1621,7 +1621,7 @@
   <!-- VIDEO PLAYER -->
   <div class="video-container" id="videoContainer">
     <div class="video-player">
-      <video id="videoPlayerElement" controls autoplay>
+      <video id="videoPlayerElement" controls autoplay muted playsinline>
         <!-- Video will be dynamically loaded -->
       </video>
     </div>
@@ -1858,6 +1858,7 @@
     function populateAllMovies() {
       const allMoviesRow = document.getElementById('all-movies-row');
       const allMovieCards = document.querySelectorAll('.movie-card[data-id]');
+      
       
       allMovieCards.forEach(card => {
         const clone = card.cloneNode(true);
